@@ -12,9 +12,10 @@ Usage (from the top folder of this repo):
     python3 tools/build_media.py                 # everything
     python3 tools/build_media.py 13in3-a         # one screen
 Options:
-    --flat       no dithering: solid colour blocks (best for text-and-shape posters)
+    --flat       no mixing at all: every area becomes one solid ink (crispest, but colours the
+                 screen has no ink for, like teal, jump to the nearest ink)
     --boost N    colour/contrast boost before converting, default 1.0 (1.0 = none, 2.0 = strong)
-Needs: pip3 install pillow
+Needs: pip3 install pillow numpy   (without numpy it falls back to a noisier method)
 """
 import os
 import sys
@@ -57,11 +58,58 @@ def prepare(im, size, boost):
     return im
 
 
+def _bayer(n):
+    b = [[0]]
+    while len(b) < n:
+        m = len(b)
+        b = [[4 * b[y % m][x % m] + (0, 2, 3, 1)[(y // m) * 2 + (x // m)] for x in range(2 * m)] for y in range(2 * m)]
+    return [[(v + 0.5) / (n * n) for v in row] for row in b]
+
+
+def mixed_inks(im, n=4, count=16):
+    """Ordered dithering from up to 16 real ink dots per pixel group (after Yliluoma).
+    Each colour in the picture becomes a fixed, regular fine pattern of the real inks whose
+    average matches it (so teal = a steady blue/green/black mix, a darker teal = more black).
+    Flat areas stay clean and regular instead of speckled like error diffusion, which looks
+    like a noisy high-ISO photo on this screen.
+    Returns an 'L' image of ink indices 0..5, or None if numpy is not installed."""
+    try:
+        import numpy as np
+    except ImportError:
+        return None
+    a = np.asarray(im.convert("RGB"))
+    h, w = a.shape[:2]
+    flat = a.reshape(-1, 3)
+    key = (flat[:, 0].astype(np.int64) << 16) | (flat[:, 1].astype(np.int64) << 8) | flat[:, 2].astype(np.int64)
+    _, first, inv = np.unique(key, return_index=True, return_inverse=True)
+    colours = flat[first] / 255.0                       # every distinct colour once
+    inks = np.array(REAL, dtype=np.float64) / 255.0
+    weight = np.array([0.9, 1.0, 0.6])
+    total = np.zeros_like(colours)
+    cand = np.zeros((len(colours), count), np.int8)
+    for k in range(count):                              # greedy: add the ink that brings the average closest
+        target = np.clip((count * colours - total) / (count - k), 0, 1)
+        d = (((target[:, None, :] - inks[None, :, :]) ** 2) * weight).sum(-1)
+        pick = d.argmin(1)
+        cand[:, k] = pick
+        total += inks[pick]
+    luma = (inks * np.array([0.299, 0.587, 0.114])).sum(1)
+    cand = np.take_along_axis(cand, np.argsort(luma[cand], axis=1, kind="stable"), axis=1)
+    thr = np.tile(np.array(_bayer(n)), (h // n + 1, w // n + 1))[:h, :w].reshape(-1)
+    level = np.minimum((thr * count).astype(np.int64), count - 1)
+    idx = cand[inv.reshape(-1), level].astype(np.uint8)
+    return Image.fromarray(idx.reshape(h, w), "L")
+
+
 def to_indices(im, flat):
+    if not flat:
+        q = mixed_inks(im)
+        if q is not None:
+            return q
     dither_enum = getattr(Image, "Dither", Image)
     d = dither_enum.NONE if flat else dither_enum.FLOYDSTEINBERG
     q = im.quantize(palette=palette_image(), dither=d)
-    return q  # pixel values 0..5 = index into PURE
+    return q  # pixel values 0..5 = index into REAL / CODES
 
 
 def pack_frame(q):
