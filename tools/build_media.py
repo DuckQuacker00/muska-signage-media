@@ -13,7 +13,7 @@ Usage (from the top folder of this repo):
     python3 tools/build_media.py 13in3-a         # one screen
 Options:
     --flat       no dithering: solid colour blocks (best for text-and-shape posters)
-    --boost N    colour/contrast boost before converting, default 1.4 (1.0 = none, 2.0 = strong)
+    --boost N    colour/contrast boost before converting, default 1.0 (1.0 = none, 2.0 = strong)
 Needs: pip3 install pillow
 """
 import os
@@ -29,7 +29,7 @@ SIZES = {"13in3": (1200, 1600), "7in5": (800, 480)}
 # expects for each (from the Seeed_GFX library), and how the real ink looks.
 PURE = [(0, 0, 0), (255, 255, 255), (255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255)]
 CODES = [0xF, 0x0, 0x6, 0xB, 0x2, 0xD]  # black, white, red, yellow, green, blue
-REAL = [(25, 25, 30), (200, 200, 190), (165, 35, 35), (215, 195, 40), (45, 105, 65), (40, 70, 150)]
+REAL = [(25, 30, 33), (232, 232, 232), (178, 19, 24), (239, 222, 68), (18, 95, 32), (33, 87, 186)]
 
 IMAGE_EXT = (".png", ".jpg", ".jpeg", ".webp")
 
@@ -40,8 +40,12 @@ def family(screen):
 
 def palette_image():
     p = Image.new("P", (1, 1))
-    flat = [c for rgb in PURE for c in rgb]
-    p.putpalette(flat + [0] * (768 - len(flat)))
+    # Match against how the inks REALLY look (not pure monitor colours): a medium green on
+    # your poster then becomes the nearest real ink or a dither of real inks, as the
+    # screen's own app does, instead of everything greenish being printed in dark green.
+    flat = [c for rgb in REAL for c in rgb]
+    # unused palette slots repeat the first colour (black ink) so they can never win the match
+    p.putpalette(flat + list(REAL[0]) * ((768 - len(flat)) // 3))
     return p
 
 
@@ -63,7 +67,7 @@ def to_indices(im, flat):
 def pack_frame(q):
     """6-colour indices -> the screen's native format: 4 bits per pixel, two pixels
     per byte, left pixel in the high half, row after row, no header."""
-    lut = [CODES[i] if i < len(CODES) else 0 for i in range(256)]
+    lut = [CODES[i] if i < len(CODES) else CODES[0] for i in range(256)]
     raw = q.point(lut).tobytes()
     even, odd = raw[0::2], raw[1::2]
     return bytes((a << 4) | b for a, b in zip(even, odd))
@@ -106,7 +110,7 @@ def build_7in5(screen, src, name):
 
 def main(argv):
     flat = "--flat" in argv
-    boost = 1.4
+    boost = 1.0
     rest = []
     skip = False
     for i, a in enumerate(argv):
