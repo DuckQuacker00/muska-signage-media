@@ -1,8 +1,16 @@
-# Playlist for screen 7in5  (7.5" black & white, Raspberry Pi)
-# One poster per line:   file | minutes | start | end | days
-# The Pi's sync script (pi/sync_7in5.py) downloads these .png files in this order.
-# NOTE: for now the Pi only uses the file list and the order. The minutes/time columns
-# are for the 13.3" screens; the Pi's slideshow keeps its own timing.
-# Put pictures (any size) in source/7in5/, run tools/build_media.py, then list them here.
+# Playlist for screen 7in5   (edited by the Muska Hub Signage tab)
+#
+# Each line:   file | minutes | start | end | days
+#   file     the poster file in this folder
+#   minutes  how long to keep it on screen before moving on (2 or more)
+#   start/end  only show between these times, 24-hour clock (blank = all day)
+#   days     * = every day, or weekdays, weekends, mon-fri, sat,sun, mon,wed,fri ...
+# Order here = order on screen. Lines starting with # are notes.
+# This file is rewritten whenever you press Save in the Signage tab.
 
-# example1.png
+tz=8        # hours ahead of UTC (Malaysia = 8)
+
+01.png | 10 |  |  | *
+02.png | 10 |  |  | *
+03.png | 10 |  |  | *
+04.png | 10 |  |  | *
