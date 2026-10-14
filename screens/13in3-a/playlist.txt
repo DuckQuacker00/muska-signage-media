@@ -11,3 +11,4 @@
 tz=8        # hours ahead of UTC (Malaysia = 8)
 
 muska-welcome-4a.bin | 10 |  |  | *
+muska-menu-1.bin | 10 |  |  | *
