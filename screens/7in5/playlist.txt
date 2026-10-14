@@ -1,0 +1,8 @@
+# Playlist for screen 7in5  (7.5" black & white, Raspberry Pi)
+# One poster per line:   file | minutes | start | end | days
+# The Pi's sync script (pi/sync_7in5.py) downloads these .png files in this order.
+# NOTE: for now the Pi only uses the file list and the order. The minutes/time columns
+# are for the 13.3" screens; the Pi's slideshow keeps its own timing.
+# Put pictures (any size) in source/7in5/, run tools/build_media.py, then list them here.
+
+# example1.png

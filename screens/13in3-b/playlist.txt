@@ -1,0 +1,17 @@
+# Playlist for screen 13in3-b  (13.3" Spectra 6, portrait)
+#
+# Each line:   file | minutes | start | end | days
+#   file     the .bin file in this folder (made by tools/build_media.py)
+#   minutes  how long to keep it on screen before moving on (2 or more)
+#   start/end  only show between these times, 24-hour clock (leave blank for all day)
+#   days     * = every day, or weekdays, weekends, mon-fri, sat,sun, mon,wed,fri ...
+# Lines starting with # are notes and are ignored.
+# Order here = order on screen. Changes go live within one poster's minutes + ~5 min.
+
+tz=8        # Malaysia time (hours ahead of UTC)
+
+test.bin | 10
+# Examples (remove the # to use):
+# breakfast.bin | 10 | 07:00 | 11:00 | *
+# lunch.bin     | 10 | 11:00 | 17:00 | mon-fri
+# promo.bin     | 15
