@@ -1,17 +1,14 @@
-# Playlist for screen 13in3-b  (13.3" Spectra 6, portrait)
+# Playlist for screen 13in3-b   (edited by the Muska Hub Signage tab)
 #
 # Each line:   file | minutes | start | end | days
-#   file     the .bin file in this folder (made by tools/build_media.py)
+#   file     the poster file in this folder
 #   minutes  how long to keep it on screen before moving on (2 or more)
-#   start/end  only show between these times, 24-hour clock (leave blank for all day)
+#   start/end  only show between these times, 24-hour clock (blank = all day)
 #   days     * = every day, or weekdays, weekends, mon-fri, sat,sun, mon,wed,fri ...
-# Lines starting with # are notes and are ignored.
-# Order here = order on screen. Changes go live within one poster's minutes + ~5 min.
+# Order here = order on screen. Lines starting with # are notes.
+# This file is rewritten whenever you press Save in the Signage tab.
 
-tz=8        # Malaysia time (hours ahead of UTC)
+tz=8        # hours ahead of UTC (Malaysia = 8)
 
-test.bin | 10
-# Examples (remove the # to use):
-# breakfast.bin | 10 | 07:00 | 11:00 | *
-# lunch.bin     | 10 | 11:00 | 17:00 | mon-fri
-# promo.bin     | 15
+test.bin | 10 |  |  | *
+muska-welcome-4a.bin | 10 |  |  | *
