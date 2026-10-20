@@ -14,3 +14,4 @@ muska-bakes-dessert-3b.bin | 10 |  |  | *
 muska-welcome-4a.bin | 5 |  |  | *
 muska-coolers-3a.bin | 10 |  |  | *
 muska-mocktails-cocktails-4b.bin | 10 |  |  | *
+muska-events-8a.bin | 10 |  |  | *
