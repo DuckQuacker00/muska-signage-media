@@ -10,6 +10,6 @@
 
 tz=8        # hours ahead of UTC (Malaysia = 8)
 
-muska-welcome-4a.bin | 10 |  |  | *
+muska-welcome-4a.bin | 5 |  |  | *
 muska-bakes-dessert-3b.bin | 10 |  |  | *
 muska-coolers-3a.bin | 10 |  |  | *
